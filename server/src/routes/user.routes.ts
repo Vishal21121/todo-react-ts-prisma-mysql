@@ -4,7 +4,7 @@ import { validation } from "../middleware/validate.middleware"
 import { createAccount, loginUser } from "../controllers/user.controller"
 const router = express.Router()
 
-router.route("/user/create").post(userRegisterValidator(), validation, createAccount)
-router.route("/user/login").post(userLoginValidator(), validation, loginUser)
+router.route("/create").post(userRegisterValidator(), validation, createAccount)
+router.route("/login").post(userLoginValidator(), validation, loginUser)
 
 export default router
