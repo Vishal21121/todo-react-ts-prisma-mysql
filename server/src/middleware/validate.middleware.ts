@@ -1,4 +1,4 @@
-import { validationResult, FieldValidationError, ValidationError } from "express-validator";
+import { validationResult, ValidationError } from "express-validator";
 import { Request, Response, NextFunction } from "express";
 
 interface ErrorType {
