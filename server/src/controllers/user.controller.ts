@@ -49,4 +49,53 @@ export const createAccount = async (req: Request, res: Response) => {
             }
         })
     }
-}   
+}
+
+export const loginUser = async (req: Request, res: Response) => {
+    const { email, password } = req.body
+    try {
+        const userFound = await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        })
+        if (!userFound) {
+            return res.status(401).json({
+                success: false,
+                data: {
+                    statusCode: 401,
+                    message: "Please provide correct credentialas"
+                }
+            })
+        }
+        const isPasswordCorrect = await bcrypt.compare(password, userFound.password)
+        if (!isPasswordCorrect) {
+            return res.status(401).json({
+                success: false,
+                data: {
+                    statusCode: 401,
+                    message: "Please provide correct credentialas"
+                }
+            })
+        }
+        return res.status(200).json({
+            success: true,
+            data: {
+                statusCode: 200,
+                value: {
+                    id: userFound.id,
+                    username: userFound.username,
+                    email: userFound.email
+                }
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            data: {
+                statusCode: 500,
+                message: error || "Internal server error"
+            }
+        })
+    }
+}
