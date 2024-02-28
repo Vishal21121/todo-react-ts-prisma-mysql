@@ -160,3 +160,56 @@ export const updateTodo = async (req: Request, res: Response) => {
         )
     }
 }
+
+export const deleteTodo = async (req: Request, res: Response) => {
+    const { todoId } = req.body
+    if (!todoId) {
+        return res.status(400).json({
+            success: false,
+            data: {
+                statusCode: 400,
+                message: "todoId is required"
+            }
+        })
+    }
+    try {
+        const todoFound = await prisma.todo.findFirst({
+            where: {
+                id: todoId
+            }
+        })
+        if (!todoFound) {
+            return res.status(404).json({
+                success: false,
+                data: {
+                    statusCode: 404,
+                    message: "Please provide correct todoId"
+                }
+            })
+        }
+        const deletedTodoId = await prisma.todo.delete({
+            where: {
+                id: todoId
+            },
+            select: {
+                id: true
+            }
+        })
+        return res.status(200).json({
+            success: true,
+            data: {
+                statusCode: 200,
+                message: "Deleted the todo",
+                value: deletedTodoId
+            }
+        })
+    } catch (error) {
+        return res.status(500).json({
+            success: false,
+            data: {
+                statuCode: 500,
+                message: error || "Internal server error"
+            }
+        })
+    }
+}
