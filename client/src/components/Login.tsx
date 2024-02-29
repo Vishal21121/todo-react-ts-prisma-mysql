@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function Login() {
   return (
     <div className="hero min-h-screen bg-base-200 w-full">
@@ -30,9 +32,9 @@ function Login() {
               />
               <div className="flex gap-2 items-center mt-2">
                 <span className="text-xs w-fit">Don't have an account?</span>
-                <a href="#" className="label-text-alt link link-hover">
+                <Link to="/signup" className="label-text-alt link link-hover">
                   Signup
-                </a>
+                </Link>
               </div>
             </div>
             <div className="form-control mt-6">
