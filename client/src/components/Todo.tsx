@@ -1,11 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import useArray from "../hooks/useArray";
 import useLocalStorage from "../hooks/useLocalStorage";
 import TodoItem from "./TodoItem";
+import { useUserContext } from "../context/UserContext";
+import toast from "react-hot-toast";
 
 function Todo() {
+  const [todoContent, setTodoContent] = useState("");
   const { getItem } = useLocalStorage();
-  const { setArray, todos } = useArray();
+  const { setArray, todos, addElement } = useArray();
+  const { user } = useUserContext();
+  const userId = user?.id;
 
   const getTodos = async () => {
     const user = getItem("user");
@@ -14,8 +19,46 @@ function Todo() {
       const response = await fetch(`api/v1/todo/${userId}`);
       const data = await response.json();
       if (data.data.statusCode == 200) {
-        console.log(data.data.value);
         setArray(data.data.value);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const addTodo = async (content: string) => {
+    try {
+      const response = await fetch("/api/v1/todo/create", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: userId,
+          content: content,
+        }),
+      });
+      const data = await response.json();
+      const statusCode = data.data.statusCode;
+      if (statusCode == 201) {
+        addElement(data.data.value);
+        toast.success("Todo added successfully", {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
+        setTodoContent("");
+      } else if (statusCode == 422) {
+        toast.error(data.data.value[0]["field"], {
+          style: {
+            borderRadius: "10px",
+            background: "#333",
+            color: "#fff",
+          },
+        });
       }
     } catch (error) {
       console.log(error);
@@ -35,8 +78,15 @@ function Todo() {
             type="text"
             placeholder="What you have planned to do?"
             className="input input-bordered w-full sm:w-3/4"
+            value={todoContent}
+            onChange={(e) => setTodoContent(e.target.value)}
           />
-          <button className="btn btn-success">Submit</button>
+          <button
+            className="btn btn-success"
+            onClick={() => addTodo(todoContent)}
+          >
+            Submit
+          </button>
         </div>
       </div>
       <div className="w-3/4 md:w-4/5 flex flex-col items-center gap-4 p-4">
