@@ -14,8 +14,8 @@ function TodoItem() {
         </p>
       </div>
       <div className="flex gap-2">
-        <FaEdit className="text-2xl sm:text-3xl" />
-        <MdDelete className="text-2xl sm:text-3xl" />
+        <FaEdit className="text-2xl sm:text-3xl hover:pointer" />
+        <MdDelete className="text-2xl sm:text-3xl hover:pointer" />
       </div>
     </div>
   );
