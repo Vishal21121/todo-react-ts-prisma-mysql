@@ -8,9 +8,10 @@ import toast from "react-hot-toast";
 function Todo() {
   const [todoContent, setTodoContent] = useState("");
   const { getItem } = useLocalStorage();
-  const { setArray, todos, addElement } = useArray();
+  const { setArray, todos, addElement, removeElement } = useArray();
   const { user } = useUserContext();
   const userId = user?.id;
+  console.log(todos);
 
   const getTodos = async () => {
     const user = getItem("user");
@@ -65,6 +66,27 @@ function Todo() {
     }
   };
 
+  const deleteTodo = async (id: string) => {
+    try {
+      const response = await fetch("/api/v1/todo/delete", {
+        method: "DELETE",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          todoId: id,
+        }),
+      });
+      const data = await response.json();
+      if (data.data.statusCode == 200) {
+        removeElement(data.data.value.id);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getTodos();
   }, []);
@@ -93,7 +115,7 @@ function Todo() {
         <h2 className="text-2xl font-bold">Saved Todos</h2>
         <div className="flex flex-col gap-4 w-full md:h-[60vh] overflow-scroll p-2 overflow-x-hidden">
           {todos.map((el) => (
-            <TodoItem key={el.id} el={el} />
+            <TodoItem key={el.id} el={el} deleteTodo={deleteTodo} />
           ))}
         </div>
       </div>

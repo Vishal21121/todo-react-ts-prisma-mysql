@@ -14,7 +14,9 @@ const useArray = () => {
     }
 
     const removeElement = (id: string) => {
-        setTodos(arr => arr.filter(el => el.id == id))
+        let index = todos.findIndex(el => el.id === id)
+        let arr = [...todos.slice(0, index), ...todos.slice(index + 1, todos.length - 1)]
+        setTodos(arr)
     }
 
     const updateElement = (index: number, element: Todo) => {
