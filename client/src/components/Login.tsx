@@ -1,6 +1,13 @@
 import { Link } from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
+import { useState } from "react";
 
 function Login() {
+  const { loginUser } = useUserContext();
+  const [userData, setUserData] = useState({
+    email: "",
+    password: "",
+  });
   return (
     <div className="hero min-h-screen bg-base-200 w-full">
       <div className="hero-content flex-col lg:w-1/2">
@@ -18,6 +25,10 @@ function Login() {
                 placeholder="email"
                 className="input input-bordered"
                 required
+                value={userData.email}
+                onChange={(e) =>
+                  setUserData((pre) => ({ ...pre, email: e.target.value }))
+                }
               />
             </div>
             <div className="form-control">
@@ -29,6 +40,10 @@ function Login() {
                 placeholder="password"
                 className="input input-bordered"
                 required
+                value={userData.password}
+                onChange={(e) =>
+                  setUserData((pre) => ({ ...pre, password: e.target.value }))
+                }
               />
               <div className="flex gap-2 items-center mt-2">
                 <span className="text-xs w-fit">Don't have an account?</span>
@@ -38,7 +53,15 @@ function Login() {
               </div>
             </div>
             <div className="form-control mt-6">
-              <button className="btn btn-primary">Login</button>
+              <button
+                className="btn btn-primary"
+                onClick={(e) => {
+                  e.preventDefault();
+                  loginUser(userData);
+                }}
+              >
+                Login
+              </button>
             </div>
           </form>
         </div>

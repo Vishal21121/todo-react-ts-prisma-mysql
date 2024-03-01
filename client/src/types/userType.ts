@@ -3,8 +3,11 @@ export interface User {
     username: string;
 }
 
-export interface CreateUserData {
-    username: string;
+export interface loginUserData {
     email: string;
     password: string;
+}
+
+export interface CreateUserData extends loginUserData {
+    username: string;
 }
