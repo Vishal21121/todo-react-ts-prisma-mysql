@@ -5,6 +5,7 @@ import Todo from "./components/Todo";
 import { Toaster } from "react-hot-toast";
 import PublicRoute from "./components/PublicRoute";
 import PrivateRoute from "./components/PrivateRoute";
+import PageNotFound from "./components/PageNotFound";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             </PrivateRoute>
           }
         />
+        <Route path="*" element={<PageNotFound />} />
       </Routes>
     </>
   );

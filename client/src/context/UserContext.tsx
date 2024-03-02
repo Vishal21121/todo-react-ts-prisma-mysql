@@ -8,12 +8,14 @@ type UserContextValueType = {
   user: User | null;
   createUser: (data: CreateUserData) => void;
   loginUser: (data: loginUserData) => void;
+  logoutUser: () => void;
 };
 
 const UserContext = createContext<UserContextValueType>({
   user: null,
   createUser: (data: CreateUserData) => {},
   loginUser: (data: loginUserData) => {},
+  logoutUser: () => {},
 });
 
 const useUserContext = () => {
@@ -22,7 +24,7 @@ const useUserContext = () => {
 
 function UserContextProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const { getItem, setItem } = useLocalStorage();
+  const { getItem, setItem, deleteItem } = useLocalStorage();
   const navigate = useNavigate();
 
   const createUser = async (data: CreateUserData) => {
@@ -115,12 +117,17 @@ function UserContextProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const logoutUser = () => {
+    deleteItem("user");
+    setUser(null);
+  };
+
   useEffect(() => {
     const user = getItem("user");
     setUser(user);
   }, []);
   return (
-    <UserContext.Provider value={{ user, createUser, loginUser }}>
+    <UserContext.Provider value={{ user, createUser, loginUser, logoutUser }}>
       {children}
     </UserContext.Provider>
   );

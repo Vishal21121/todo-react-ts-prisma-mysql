@@ -1,4 +1,4 @@
-export interface Todo {
+interface Todo {
     id: string,
     content: string,
     isCompleted: boolean,
@@ -6,3 +6,5 @@ export interface Todo {
     updatedAt: string,
     userId: string
 }
+
+export default Todo

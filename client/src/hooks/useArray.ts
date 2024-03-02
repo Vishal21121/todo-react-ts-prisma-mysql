@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Todo } from "../types/todoType"
+import Todo from "../types/todoType"
 
 
 const useArray = () => {
@@ -9,25 +9,33 @@ const useArray = () => {
         setTodos(array)
     }
 
+    const getELementIndex = (id: (string | undefined)) => {
+        if (id == undefined) {
+            return
+        }
+        let index = todos.findIndex(el => el.id == id)
+        return index
+    }
+
     const addElement = (element: Todo) => {
         setTodos((pre) => [...pre, element])
     }
 
     const removeElement = (id: string) => {
-        let index = todos.findIndex(el => el.id === id)
-        let arr = [...todos.slice(0, index), ...todos.slice(index + 1, todos.length - 1)]
+        todos.filter(el => el.id != id)
+        setTodos(todos.filter(el => el.id != id))
+    }
+
+    const updateElement = (index: (number | undefined), element: (Todo | null)) => {
+        if (element == null || index == undefined) {
+            return
+        }
+        let arr = [...todos.slice(0, index), element, ...todos.slice(index + 1, todos.length - 1)]
+        console.log("not return", arr)
         setTodos(arr)
     }
 
-    const updateElement = (index: number, element: Todo) => {
-        setTodos(arr => [
-            ...arr.slice(0, index),
-            element,
-            ...arr.slice(index + 1, arr.length - 1)
-        ])
-    }
-
-    return { setArray, addElement, removeElement, updateElement, todos }
+    return { setArray, addElement, removeElement, updateElement, todos, getELementIndex }
 }
 
 export default useArray

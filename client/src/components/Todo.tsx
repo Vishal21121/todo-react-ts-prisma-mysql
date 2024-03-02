@@ -4,14 +4,24 @@ import useLocalStorage from "../hooks/useLocalStorage";
 import TodoItem from "./TodoItem";
 import { useUserContext } from "../context/UserContext";
 import toast from "react-hot-toast";
+import { IoLogOut } from "react-icons/io5";
+import TodoType from "../types/todoType";
 
 function Todo() {
   const [todoContent, setTodoContent] = useState("");
   const { getItem } = useLocalStorage();
-  const { setArray, todos, addElement, removeElement } = useArray();
-  const { user } = useUserContext();
+  const {
+    setArray,
+    todos,
+    addElement,
+    removeElement,
+    updateElement,
+    getELementIndex,
+  } = useArray();
+  const { user, logoutUser } = useUserContext();
+  const [editMode, setEditMode] = useState(false);
+  const [editableElement, setEditableElement] = useState<TodoType | null>(null);
   const userId = user?.id;
-  console.log(todos);
 
   const getTodos = async () => {
     const user = getItem("user");
@@ -27,7 +37,42 @@ function Todo() {
     }
   };
 
+  const editTodo = (element: TodoType) => {
+    setTodoContent(element.content);
+    setEditableElement(element);
+    setEditMode(true);
+  };
+
   const addTodo = async (content: string) => {
+    if (editMode) {
+      try {
+        const response = await fetch("/api/v1/todo/update", {
+          method: "PATCH",
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            content: content,
+            isCompleted: editableElement?.isCompleted,
+            todoId: editableElement?.id,
+          }),
+        });
+        const data = await response.json();
+        console.log(data);
+        if (data.data.statusCode == 200) {
+          const index = getELementIndex(editableElement?.id);
+          console.log(index);
+          updateElement(index, data.data.value);
+          setTodoContent("");
+        }
+      } catch (error) {
+        console.log(error);
+      }
+      console.log(todos);
+      setEditMode(false);
+      return;
+    }
     try {
       const response = await fetch("/api/v1/todo/create", {
         method: "POST",
@@ -109,13 +154,22 @@ function Todo() {
           >
             Submit
           </button>
+          <button className="btn btn-primary" onClick={logoutUser}>
+            Logout
+            <IoLogOut className="text-2xl" />
+          </button>
         </div>
       </div>
       <div className="w-3/4 md:w-4/5 flex flex-col items-center gap-4 p-4">
         <h2 className="text-2xl font-bold">Saved Todos</h2>
         <div className="flex flex-col gap-4 w-full md:h-[60vh] overflow-scroll p-2 overflow-x-hidden">
           {todos.map((el) => (
-            <TodoItem key={el.id} el={el} deleteTodo={deleteTodo} />
+            <TodoItem
+              key={el.id}
+              el={el}
+              deleteTodo={deleteTodo}
+              editTodo={editTodo}
+            />
           ))}
         </div>
       </div>
